@@ -20,32 +20,31 @@ def predict():
     data = request.get_json()
     
     # Extract individual features from JSON data
-    inputQuery1 = data.get('query1')
-    inputQuery2 = data.get('query2')
-    inputQuery3 = data.get('query3')
-    inputQuery4 = data.get('query4')
-    inputQuery5 = data.get('query5')
-    inputQuery6 = data.get('query6')
-    inputQuery7 = data.get('query7')
-    inputQuery8 = data.get('query8')
-    inputQuery9 = data.get('query9')
-    inputQuery10 = data.get('query10')
-    inputQuery11 = data.get('query11')
-    inputQuery12 = data.get('query12')
-    inputQuery13 = data.get('query13')
-    inputQuery14 = data.get('query14')
-    inputQuery15 = data.get('query15')
-    inputQuery16 = data.get('query16')
-    inputQuery17 = data.get('query17')
-    inputQuery18 = data.get('query18')
-    inputQuery19 = data.get('query19')
+    SeniorCitizen = data.get('SeniorCitizen')
+    MonthlyCharges = data.get('MonthlyCharges')
+    TotalCharges = data.get('TotalCharges')
+    gender = data.get('gender')
+    Partner = data.get('Partner')
+    Dependents = data.get('Dependents')
+    PhoneService = data.get('PhoneService')
+    MultipleLines= data.get('MultipleLines')
+    InternetService= data.get('InternetService')
+    OnlineSecurity= data.get('OnlineSecurity')
+    OnlineBackup= data.get('OnlineBackup')
+    DeviceProtection = data.get('DeviceProtection')
+    TechSupport= data.get('TechSupport')
+    StreamingTV = data.get('StreamingTV')
+    StreamingMovies = data.get('StreamingMovies')
+    Contract= data.get('Contract')
+    PaperlessBilling = data.get('PaperlessBilling')
+    PaymentMethod= data.get('PaymentMethod')
+    tenure = data.get('tenure')
 
     model = pickle.load(open("model.sav", "rb"))
     
-    data_list = [[inputQuery1, inputQuery2, inputQuery3, inputQuery4, inputQuery5, inputQuery6, inputQuery7, 
-                  inputQuery8, inputQuery9, inputQuery10, inputQuery11, inputQuery12, inputQuery13, inputQuery14,
-                  inputQuery15, inputQuery16, inputQuery17, inputQuery18, inputQuery19]]
-    
+    data_list = [[SeniorCitizen, MonthlyCharges, TotalCharges, gender, Partner, Dependents, PhoneService, 
+                  MultipleLines, InternetService, OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport, 
+                  StreamingTV, StreamingMovies, Contract, PaperlessBilling, PaymentMethod, tenure]]
     new_df = pd.DataFrame(data_list, columns=['SeniorCitizen', 'MonthlyCharges', 'TotalCharges', 'gender', 
                                               'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService',
                                               'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport',
@@ -53,6 +52,12 @@ def predict():
                                               'PaymentMethod', 'tenure'])
     
     df_2 = pd.concat([df_1, new_df], ignore_index=True)
+    
+    # Ensure the tenure column contains only valid integers
+    df_2['tenure'] = pd.to_numeric(df_2['tenure'], errors='coerce')
+    
+    # Drop rows with invalid tenure values
+    df_2.dropna(subset=['tenure'], inplace=True)
     
     # Group the tenure in bins of 12 months
     labels = ["{0} - {1}".format(i, i + 11) for i in range(1, 72, 12)]
